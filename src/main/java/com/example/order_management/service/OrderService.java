@@ -1,4 +1,4 @@
-package com.example.ordermanagement.ordermanagement.service;
+package com.example.order_management.service;
 
 import com.example.order_management.model.Order;
 import com.example.order_management.repository.OrderRepository;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -13,28 +14,44 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    // Create a new order
+    // Method to create an Order by accepting an Order object directly
     public Order createOrder(Order order) {
         return orderRepository.save(order);
     }
 
-    // Get all orders
+    // Retrieve all orders
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    // Update an order
-    public Order updateOrder(Long id, Order orderDetails) {
-        Order order = orderRepository.findById(id).orElseThrow();
-        order.setProductName(orderDetails.getProductName());
-        order.setQuantity(orderDetails.getQuantity());
-        order.setCustomerName(orderDetails.getCustomerName());
-        order.setOrderDate(orderDetails.getOrderDate());
-        return orderRepository.save(order);
+    // Retrieve an order by ID
+    public Order getOrderById(Long id) {
+        Optional<Order> order = orderRepository.findById(id);
+        return order.orElse(null);
     }
 
-    // Delete an order
-    public void deleteOrder(Long id) {
-        orderRepository.deleteById(id);
+    // Update an order by ID
+    public Order updateOrder(Long id, Order orderDetails) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            Order existingOrder = order.get();
+            existingOrder.setProductName(orderDetails.getProductName());
+            existingOrder.setQuantity(orderDetails.getQuantity());
+            existingOrder.setCustomerName(orderDetails.getCustomerName());
+            existingOrder.setOrderDate(orderDetails.getOrderDate());
+            return orderRepository.save(existingOrder);
+        } else {
+            return null;
+        }
+    }
+
+    // Delete an order by ID
+    public boolean deleteOrder(Long id) {
+        if (orderRepository.existsById(id)) {
+            orderRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

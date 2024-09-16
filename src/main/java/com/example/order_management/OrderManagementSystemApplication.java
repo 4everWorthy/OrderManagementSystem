@@ -1,4 +1,4 @@
-package com.example.ordermanagement.ordermanagement;
+package com.example.order_management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
